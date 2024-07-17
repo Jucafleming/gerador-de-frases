@@ -1,6 +1,7 @@
 import { palavras }  from '../../palavrasLista'
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import api from '../../services/api';
 
 const Header = styled.header`
  background-color: #282c34;
@@ -22,22 +23,50 @@ background: #bf3f00 ;
   padding: 0.25em 1em;
 `
 
+const Imagem = styled.img`
+height: 500px;
+width: 500px;
+`
+
 function HeaderComponent(){
     const [frase, setFrase] = useState('');
+    const [cat, setCat] = useState();
+
+    useEffect(() => {
+      api
+        .get()
+        .then((response) => setCat(response.data[0]))
+        .catch((err) => {
+          console.error("ops! ocorreu um erro" + err);
+        });
+    }, []);
 
     const gerarFrase = () => {
       const palavraAleatoria = palavras[Math.floor(Math.random() * palavras.length)];
       setFrase(`Que foi, ${palavraAleatoria}`);
     };
 
+    const  gerarConteudo = () => {
+      api
+      .get('/')
+      .then((response) => {
+        setCat(response.data[0]);
+        gerarFrase();
+      })
+      .catch((err) => {
+        console.error("ops! ocorreu um erro: " + err);
+      });
+    };
+
+    
+
     return (
         <Header>
         <h1>Gerador de Frases</h1>
-        <Botao onClick={gerarFrase}>Gerar Frase</Botao>
+        <Botao onClick={gerarConteudo}>Gerar Frase</Botao>
         {frase && <p>{frase}</p>}      
-        {frase && <img src = 'https://classic.exame.com/wp-content/uploads/2023/11/CarlosAlbertoNobrega.jpg?quality=70&strip=info&w=1200'></img>}
-        <br></br>
-        
+        {frase && <Imagem src = { cat?.url }></Imagem>}
+        <br></br>        
       </Header>    
     )
 }

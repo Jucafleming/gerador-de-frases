@@ -8,6 +8,8 @@ button {
   padding: 0.5rem 1rem;
   margin-top: 1rem;
   cursor: pointer;
+  width: 200px;
+  height: 45px;
 }
 
 p {
